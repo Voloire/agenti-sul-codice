@@ -21,7 +21,7 @@ l'esercizio con template e soluzione di riferimento, l'autoverifica con le rispo
 | 2 | [I controlli dei tre vendor, letti in parallelo](lezioni/02-controlli-vendor/README.md) | 1 | disponibile |
 | 3 | [La griglia: OWASP Top 10 for Agentic Applications 2026](lezioni/03-griglia-owasp/README.md) | 1 | disponibile |
 | 4 | [Gli incidenti veri, ricostruiti](lezioni/04-incidenti/README.md) | 2 | disponibile |
-| 5 | Identità e credenziali degli agenti | 3 | in scrittura |
+| 5 | [Identità e credenziali degli agenti](lezioni/05-identita-credenziali/README.md) | 3 | disponibile |
 | 6 | Il lab: il workflow di riferimento, una volta | 3–4 | in scrittura |
 | 7 | I protocolli, collocati | 1 | in scrittura |
 | 8 | L'assessment, misurabile | 1–2 | in scrittura |
