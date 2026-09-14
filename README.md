@@ -10,6 +10,28 @@ verificate una per una.
 
 ---
 
+## Le lezioni
+
+Ogni lezione: domanda d'apertura, il contenuto spiegato dalle fonti, le fonti da leggere dopo,
+l'esercizio con template e soluzione di riferimento, l'autoverifica con le risposte.
+
+| # | lezione | sessioni | stato |
+|---|---|---|---|
+| 1 | [Le posizioni correnti sul multi-agent](lezioni/01-posizioni-correnti/README.md) | 2 | disponibile |
+| 2 | I controlli dei tre vendor, letti in parallelo | 1 | in scrittura |
+| 3 | La griglia: OWASP Top 10 for Agentic Applications 2026 | 1 | in scrittura |
+| 4 | Gli incidenti veri, ricostruiti | 2 | in scrittura |
+| 5 | Identità e credenziali degli agenti | 3 | in scrittura |
+| 6 | Il lab: il workflow di riferimento, una volta | 3–4 | in scrittura |
+| 7 | I protocolli, collocati | 1 | in scrittura |
+| 8 | L'assessment, misurabile | 1–2 | in scrittura |
+
+Per seguirlo: fai un fork, e usa `progressi/` — un file per passo, già predisposto per il primo.
+Il resto di questa pagina è il syllabus: perché questo percorso, il workflow di riferimento, i
+passi in breve, il glossario, le fonti.
+
+---
+
 ## Perché questo percorso e non un altro
 
 **Il pezzo maturo ha un nome preciso.** GitHub Copilot cloud agent, OpenAI Codex, Claude Code,
