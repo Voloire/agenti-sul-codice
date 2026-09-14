@@ -64,8 +64,10 @@ controllo sul trigger è la prima porta.
 ### 3. Dove l'agente può scrivere, e cosa non può fare con git
 
 GitHub è il più preciso: «Copilot cloud agent only has the ability to push to a single branch» —
-«a new `copilot/` branch is created for Copilot, and the agent can only push to that branch». E:
-«It cannot directly run `git push` or other Git commands», può fare solo «simple push operations».
+«a new `copilot/` branch is created for Copilot, and the agent can only push to that branch», con
+un'eccezione dichiarata: «When the agent is triggered by mentioning @copilot on an existing pull
+request, Copilot has write access to the pull request's branch». E: «It cannot directly run
+`git push` or other Git commands», può fare solo «simple push operations».
 
 Anthropic: «Claude commits code changes to a new branch», nome non specificato. E un dettaglio che
 sorprende chi si aspetta un agente autonomo: «Claude does not create pull requests automatically»
@@ -105,17 +107,22 @@ Codex, per il cloud: la fase di setup «can access the network to install specif
 then the agent phase runs offline by default unless you enable internet access». Per la CLI: «By
 default, the agent runs with network access turned off»; abilitarla è marcato «Elevated Risk».
 Esiste un proxy con allowlist per dominio, dove «`deny` always wins» — e la pagina avverte che
-«it does not grant network access by itself». Le destinazioni private (loopback, link-local, reti
-private) sono bloccate di default.
+«it does not grant network access by itself». Quando il proxy è attivo, le destinazioni private
+(loopback, link-local, reti private) sono bloccate di default (`allow_local_binding = false`); il
+proxy stesso è «off by default».
 
 GitHub: «GitHub restricts Copilot cloud agent's access to the internet», con un firewall che ha
 una allowlist raccomandata attiva di default (repository di pacchetti, registry, certificate
 authority, host per browser); se una richiesta è bloccata, «a warning is added to the pull request
 body»; e «Disabling the firewall will allow Copilot to connect to any host, increasing risks of
-exfiltration».
+exfiltration». La stessa pagina ha una sezione *Limitations* da leggere per intero: il firewall
+«only applies to processes started by the agent via its Bash tool. It does not apply to MCP servers
+or processes started in configured Copilot setup steps»; «Sophisticated attacks may bypass the
+firewall»; e «should not be considered a comprehensive security solution».
 
 Anthropic: **nessuna menzione** di firewall o rete in uscita nel file `security.md`. L'action gira
-in un runner GitHub Actions, che di suo non filtra il traffico in uscita.
+in un runner GitHub Actions: la rete in uscita, se va limitata, la limita chi configura il runner —
+la pagina non ne parla.
 
 ### 6. Contenuto non fidato e prompt injection
 
@@ -127,15 +134,16 @@ GitHub: «GitHub filters hidden characters before passing user input to Copilot 
 
 Anthropic: l'action «sanitizes content by stripping HTML comments, invisible characters, markdown
 image alt text, hidden HTML attributes, and HTML entities»; si può restringere ai commenti di
-autori scelti con `include_comments_by_actor`. E poi la frase che vale più di tutte le altre:
-**«This reduces but does not eliminate prompt injection risk»**, con l'avviso che «new bypass
-techniques may emerge» e che restringere gli strumenti «may not eliminate the risk».
+autori scelti con `include_comments_by_actor`. E subito dopo l'avviso: «new bypass techniques may
+emerge». La frase più netta del file — **«This reduces but does not eliminate prompt injection
+risk»** — sta nella sezione sugli utenti senza write access, riferita allo scrub dell'ambiente e
+all'isolamento dei subprocessi: anche lì, il vendor dice che riduce, non elimina.
 
-Codex non filtra: dichiara il rischio — «Prompt injection can cause the agent to fetch and follow
-untrusted instructions» — e dichiara anche i limiti del proprio proxy, che «does not filter web
-search, app or connector tool calls, MCP server connections, browser or Computer Use activity». La
-protezione contro il DNS rebinding è «a best-effort ... check» che «reduces DNS rebinding risk,
-but it does not eliminate it».
+Codex non dichiara alcun filtro: dichiara il rischio — «Prompt injection can cause the agent to
+fetch and follow untrusted instructions» — e dichiara anche i limiti del proprio proxy, che «does
+not filter web search, app or connector tool calls, MCP server connections, browser or Computer Use
+activity». La protezione contro il DNS rebinding è «a best-effort ... check» che «reduces DNS
+rebinding risk, but it does not eliminate it».
 
 Impara a leggere queste frasi per quello che sono: **il vendor che scrive cosa non garantisce è
 quello che ha capito il problema.** Il silenzio non è sicurezza.
@@ -145,11 +153,13 @@ quello che ha capito il problema.** Il silenzio non è sicurezza.
 Codex cloud è netto: «Secrets configured for cloud environments are available only during setup
 and are removed before the agent phase starts.» Il codice dell'agente non li vede.
 
-Anthropic: «best-effort scrub of Anthropic, cloud, and GitHub Actions secrets from subprocess
-environments»; e due divieti: «Do not use a personal access token» perché «could be partially or
-fully recovered over time via prompt injection», e «Never hardcode your Anthropic API key». Il
-token usato è «short-lived» e «scoped specifically to the repository», con «No Cross-Repository
-Access». Un'altra scelta che protegge dal contenuto malevolo: i file di configurazione (`.claude/`,
+Anthropic: il token usato verso GitHub è «short-lived» e «scoped specifically to the repository»,
+con «No Cross-Repository Access», e «Never hardcode your Anthropic API key». Attenzione a una
+condizione che è facile perdere: lo «scrub of Anthropic, cloud, and GitHub Actions secrets from
+subprocess environments», dichiarato «best-effort», e il divieto «Do not use a personal access
+token» perché «could be partially or fully recovered over time via prompt injection», sono scritti
+**per il caso in cui si abilita `allowed_non_write_users`**. Nel default — solo utenti con write,
+GitHub App — la pagina non dichiara alcuno scrub. Un'altra scelta che protegge dal contenuto malevolo: i file di configurazione (`.claude/`,
 `.mcp.json`, `CLAUDE.md`) vengono ripristinati «from the PR base branch before starting Claude»,
 così una PR non può riscrivere le istruzioni dell'agente che la valuta.
 
@@ -174,13 +184,13 @@ Codex: **non dichiarato**. Le parole «author», «signed», «merge» non compa
 | controllo | Copilot cloud agent | Codex | claude-code-action |
 |---|---|---|---|
 | chi innesca | write access | non dichiarato | write access; bot esclusi di default; bypass marcato «significant security risk» |
-| branch di scrittura | solo `copilot/`; niente comandi git diretti | non dichiarato; `.git` e config read-only | «a new branch», nome non specificato |
+| branch di scrittura | un solo branch: `copilot/` nuovo, o il branch della PR se invocato con @copilot su una PR esistente; niente comandi git diretti | non dichiarato; `.git` e config read-only | «a new branch», nome non specificato |
 | approvazione e merge | non può approvare né mergiare; PR draft; il richiedente non approva; +1 approvazione se sotto app identity | non dichiarato | non dichiarato; non crea la PR, l'utente la apre |
-| rete in uscita | firewall con allowlist default; warning in PR se bloccato | off di default (cloud e CLI); allowlist per dominio; private bloccate | non dichiarato |
-| contenuto nascosto | filtra hidden characters e HTML comments | nessun filtro; dichiara il rischio | strip di commenti, invisibili, alt text, attributi, entità; «reduces but does not eliminate» |
-| segreti nella fase agente | non dichiarato in questa pagina | rimossi prima della fase agente | scrub best-effort; mai PAT; token short-lived per repo |
+| rete in uscita | firewall con allowlist default; warning in PR se bloccato; non copre MCP server né setup steps | off di default (cloud e CLI); allowlist per dominio; private bloccate se il proxy è attivo | non dichiarato |
+| contenuto nascosto | filtra hidden characters e HTML comments | nessun filtro dichiarato; dichiara il rischio | strip di commenti, invisibili, alt text, attributi, entità; «new bypass techniques may emerge» |
+| segreti nella fase agente | non dichiarato in questa pagina | rimossi prima della fase agente | token short-lived per repo; scrub best-effort e divieto di PAT dichiarati solo con `allowed_non_write_users` |
 | identità dei commit | Copilot autore, umano co-author, firmati | non dichiarato | non firmati di default; firma opzionale |
-| cosa dichiara di non garantire | — | injection possibile; proxy non copre MCP e web search; DNS best-effort | «does not eliminate prompt injection risk» |
+| cosa dichiara di non garantire | il firewall «should not be considered a comprehensive security solution»; «Sophisticated attacks may bypass» | injection possibile; proxy non copre MCP e web search; DNS best-effort | «reduces but does not eliminate prompt injection risk»; «new bypass techniques may emerge» |
 
 Tre cose si leggono in questa tabella e nessuna si leggeva nelle pagine separate.
 
@@ -194,8 +204,9 @@ uscita; GitHub non spiega i segreti nella pagina dei rischi. Un'assenza non è u
 prodotto: è **un controllo che devi mettere tu**, nel repository o nell'ambiente — e che un
 fornitore deve saperti spiegare.
 
-**La divergenza sui segreti.** Codex li toglie dall'ambiente prima che l'agente giri; gli altri due
-no. È la differenza da cui parte la lezione 5.
+**La divergenza sui segreti.** Codex dichiara di toglierli dall'ambiente prima che l'agente giri;
+Anthropic dichiara uno scrub solo in una configurazione particolare; GitHub, in questa pagina, non
+dice nulla. È la differenza da cui parte la lezione 5, dove si leggono le pagine che lo dicono.
 
 ### 10. Cosa te ne fai
 
@@ -266,8 +277,8 @@ tre i vendor? Quante da nessuno? Tre righe in «Dopo».
    dei bot?
 2. Su approvazione e merge un solo vendor dichiara qualcosa. Cosa significa per gli altri due, e
    dove si impone quel controllo?
-3. Perché la frase «this reduces but does not eliminate prompt injection risk» è un punto a
-   favore di chi la scrive?
+3. Anthropic scrive «this reduces but does not eliminate prompt injection risk». A cosa si
+   riferisce esattamente, e perché è un punto a favore di chi la scrive?
 
 <details>
 <summary>Risposte</summary>
@@ -279,9 +290,11 @@ tre i vendor? Quante da nessuno? Tre righe in «Dopo».
    quindi la separazione tra chi scrive e chi approva la fanno i **ruleset** (require pull request,
    required approvals, bypass list vuota) — o non la fa nessuno. Per questo nella lezione 6 si
    configurano prima di avviare l'agente.
-3. Perché chi scrive cosa **non** garantisce ha capito il problema: la prompt injection attraverso
-   contenuto letto dall'agente non si elimina con un filtro, si riduce. Il silenzio di un vendor su
-   questo punto non è sicurezza, è assenza di dichiarazione.
+3. Allo scrub dell'ambiente e all'isolamento dei subprocessi nel caso `allowed_non_write_users` —
+   non alla sanitizzazione del contenuto, per la quale la pagina dice «new bypass techniques may
+   emerge». È un punto a favore perché chi scrive cosa **non** garantisce ha capito il problema: la
+   prompt injection attraverso contenuto letto dall'agente si riduce, non si elimina. Il silenzio di
+   un vendor su questo punto non è sicurezza, è assenza di dichiarazione.
 
 </details>
 

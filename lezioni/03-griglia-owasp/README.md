@@ -26,13 +26,14 @@ poter dire «presente / assente / ignoto» riga per riga invece di «mi sembra a
 
 La griglia che l'industria usa per gli agenti è la **OWASP Top 10 for Agentic Applications 2026**,
 pubblicata dall'OWASP Gen AI Security Project il 9 dicembre 2025 (versione «2026», licenza
-CC BY-SA 4.0). È il documento che un auditor, un CISO o un cliente citerà; e ogni voce ha la
-struttura standard OWASP — descrizione, esempi, scenari d'attacco, mitigazioni, riferimenti — così
-si legge in fretta e si cita con precisione.
+CC BY-SA 4.0). È — a giudizio di chi scrive — il documento che un auditor, un CISO o un cliente
+citerà; e ogni voce ha la struttura standard OWASP — descrizione, esempi, scenari d'attacco,
+mitigazioni, riferimenti — così si legge in fretta e si cita con precisione.
 
-Un principio la attraversa tutta, dichiarato a pagina 7: **least agency**, l'estensione agli agenti
-del *least privilege*. Non solo «meno permessi possibili», ma «meno autonomia e meno capacità di
-azione possibili per il compito».
+Un principio la attraversa tutta, dichiarato nell'introduzione: **Least-Agency**, l'estensione
+agli agenti del *least privilege* — «our advice to organizations to avoid unnecessary autonomy».
+In parole nostre: non solo meno permessi possibili, ma meno autonomia e meno capacità di azione
+possibili per il compito.
 
 ### 2. Da dove viene: l'excessive agency del 2025
 
@@ -42,14 +43,14 @@ più chiaro di spiegare il problema a chi non ha letto niente:
 
 | root cause | cosa significa |
 |---|---|
-| **Excessive Functionality** | l'estensione «includes capabilities beyond what's necessary»: può modificare o cancellare quando basterebbe leggere |
-| **Excessive Permissions** | accesso ai sistemi a valle «exceeding operational requirements»: `UPDATE`/`DELETE` quando basta `SELECT` |
+| **Excessive Functionality** | l'estensione «include[s] functions that are not needed for the intended operation of the system»: può modificare o cancellare quando basterebbe leggere |
+| **Excessive Permissions** | «permissions on downstream systems that are not needed for the intended operation of the application»: `UPDATE`/`DELETE` quando basta `SELECT` |
 | **Excessive Autonomy** | il sistema «fail[s] to independently verify and approve high-impact actions»: agisce senza che nessuno confermi |
 
 La lista agentica **non sostituisce** quella: la cita come radice. ASI02 «builds on the mitigations
 of LLM06:2025», ASI03 è «the agentic evolution of Excessive Agency», ASI09 «builds on LLM06:2025».
-E l'edizione 2026 della lista LLM, uscita nell'agosto 2026, ha promosso la voce a **LLM03:2026** e
-ha scritto il confine tra le due liste in una frase: «This list owns the risk when the model is a
+E nell'edizione 2026 della lista LLM, uscita nell'agosto 2026, la voce sta al terzo posto —
+**LLM03:2026** — e il confine tra le due liste è scritto in una frase: «This list owns the risk when the model is a
 component... The moment that model becomes an actor... the risk moves to the OWASP Agentic Top
 10... neither one covers that ground alone». Quando il modello *agisce*, la griglia è questa.
 
@@ -87,7 +88,7 @@ Amazon Q, con un prompt avvelenato spedito nella versione 1.84.0; e «a compromi
 lezione 4. Mitigazioni: SBOM e AIBOM, firma di «manifests, prompts, and tool definitions»;
 allowlist con pin per content hash; un «supply chain kill switch».
 
-**ASI05 · Unexpected Code Execution** — «Agentic systems - including popular vibe coding tools -
+**ASI05 · Unexpected Code Execution (RCE)** — «Agentic systems - including popular vibe coding tools -
 often generate and execute code»: il testo diventa esecuzione. Esempio: «Replit "Vibe Coding"
 Runaway Execution», la cancellazione dei dati di produzione. Mitigazioni: «Prevent direct
 agent-to-production systems»; «Never run as root»; sandbox con filesystem ristretto alla working
@@ -102,7 +103,7 @@ scade.
 **ASI07 · Insecure Inter-Agent Communication** — Messaggi fra agenti senza autenticazione,
 integrità o validazione semantica. Esempio: spoofing della registrazione in un discovery service
 A2A. Mitigazioni: autenticazione mutua e cifratura per agente; messaggi firmati con anti-replay;
-schemi tipizzati e «protocol pinning» (MCP, A2A). *Per i coding agent*: la lezione 7.
+«typed contracts and schema validation», protocol pinning (MCP, A2A). *Per i coding agent*: la lezione 7.
 
 **ASI08 · Cascading Failures** — «The propagation and amplification of an initial fault - not the
 initial vulnerability itself». Esempio: un loop di auto-remediation che si alimenta da solo.
@@ -133,8 +134,8 @@ pipeline ha una riga.
 coding assistant con la backdoor in ASI09. Quando nella lezione 4 ricostruirai gli incidenti, il
 lavoro finale sarà scrivere accanto a ciascuno la sigla ASI: la lista è fatta per quello.
 
-**Tre voci pesano più delle altre per chi governa coding agent**, e sono quelle che le lezioni
-successive approfondiscono: ASI01 (il contenuto non fidato letto come istruzione), ASI03
+**Tre voci pesano più delle altre per chi governa coding agent** — è una scelta di questo
+percorso, non una gerarchia di OWASP — e sono quelle che le lezioni successive approfondiscono: ASI01 (il contenuto non fidato letto come istruzione), ASI03
 (l'identità e i token dell'agente), ASI05 (l'esecuzione di codice fuori dalla sandbox). Le altre
 sette non si trascurano, ma in un assessment queste tre decidono il colore della pagina.
 
@@ -175,7 +176,7 @@ sulla pipeline vera.
 | ASI02 | Tool Misuse and Exploitation | | | |
 | ASI03 | Identity and Privilege Abuse | | | |
 | ASI04 | Agentic Supply Chain Vulnerabilities | | | |
-| ASI05 | Unexpected Code Execution | | | |
+| ASI05 | Unexpected Code Execution (RCE) | | | |
 | ASI06 | Memory & Context Poisoning | | | |
 | ASI07 | Insecure Inter-Agent Communication | | | |
 | ASI08 | Cascading Failures | | | |
