@@ -4,8 +4,6 @@
 Otto passi, tredici–quindici sessioni da un'ora, solo terminale. Solo fonti primarie correnti,
 verificate una per una.
 
-La versione impaginata di questo README, con i diagrammi: **[la pagina del percorso](https://voloire.github.io/agenti-sul-codice/)**.
-
 > Il percorso non insegna a programmare agenti. Insegna a governarli: identità e credenziali,
 > la pull request come unico output, la CI prima della review, chi approva, cosa succede quando
 > qualcuno mette istruzioni dentro una issue.
