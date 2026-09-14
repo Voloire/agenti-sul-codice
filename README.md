@@ -42,7 +42,7 @@ non può approvarsi. Da qui si impara.
 **Il multi-agent non è più «immaturo», è delimitato.** Nel 2026 il punto contestato è uno solo:
 *più scrittori in parallelo sullo stesso codice*. In produzione ci sono un writer più agenti che
 leggono e rivedono, e molti agenti indipendenti ciascuno sulla propria PR con l'umano al merge.
-Anthropic e Cognition, che nel 2025 dicevano cose opposte, nel 2026 dicono la stessa.
+Anthropic e Cognition, partite nel 2025 da posizioni opposte, nel 2026 convergono sul valutatore separato e restano diverse solo sulla scrittura in parallelo.
 
 **La governance ha una griglia, e gli incidenti hanno un nome.** OWASP Top 10 for Agentic
 Applications 2026 (ASI01–ASI10) è la rubrica con cui un cliente e un auditor misurano. Comment
@@ -79,14 +79,16 @@ entra nelle letture; se viene nominata è perché la si sentirà citare e va sap
 
 ### 1 · Le posizioni correnti sul multi-agent — 2 sessioni
 
-**Leggi.** Anthropic, *When to use multi-agent systems (and when not to)*, gen. 2026. Cognition,
-*Multi-Agents: What's Actually Working*, apr. 2026. Solo questi due: il «Don't build
-multi-agents» del 2025 non si legge, l'autore l'ha ritrattato; basta sapere che esiste.
+**Leggi.** Anthropic, *Building multi-agent systems: When and how to use them*, gen. 2026.
+Cognition, *Multi-Agents: What's Actually Working*, apr. 2026. Solo questi due: il «Don't build
+multi-agents» del 2025 non si legge come posizione corrente, l'autore l'ha ristretto; basta
+sapere che esiste.
 
-**Capisci.** Single agent prima. Un secondo agente è giustificato solo per tre condizioni
-misurabili: `context protection`, parallelizzazione in *lettura*, specializzazione oltre una
-certa quantità di tool. La regola che regge in produzione: `writes stay single-threaded`, e il
-`reviewer` lavora da contesto pulito.
+**Capisci.** Single agent prima. Un secondo agente è giustificato in tre situazioni:
+`context protection`, parallelizzazione (per copertura, non per velocità), specializzazione per
+strumenti, comportamento o dominio. Cognition: `writes stay single-threaded`; Anthropic ammette
+scritture parallele solo con contesto davvero isolato. Entrambe: il valutatore lavora da contesto
+pulito.
 
 **Fai.** La checklist «quando un secondo agente è giustificato», una pagina.
 
@@ -261,8 +263,8 @@ riporta quel controllo.
 
 | fonte | data | passo | nota |
 |---|---|---|---|
-| [Anthropic — When to use multi-agent systems (and when not to)](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) | gen. 2026 | 1 | posizione corrente; *Building effective agents* (dic. 2024) resta valido solo per il vocabolario |
-| [Cognition — Multi-Agents: What's Actually Working](https://cognition.com/blog/multi-agents-working) | apr. 2026 | 1 | ritratta [Don't build multi-agents](https://cognition.com/blog/dont-build-multi-agents) (giu. 2025), stesso autore |
+| [Anthropic — Building multi-agent systems: When and how to use them](https://claude.com/blog/building-multi-agent-systems-when-and-how-to-use-them) | 23 gen. 2026 | 1 | posizione corrente; *Building effective agents* (dic. 2024) resta valido solo per il vocabolario |
+| [Cognition — Multi-Agents: What's Actually Working](https://cognition.com/blog/multi-agents-working) | apr. 2026 | 1 | restringe [Don't build multi-agents](https://cognition.com/blog/dont-build-multi-agents) (giu. 2025), stesso autore: i principi «still hold» per i parallel-writer swarms |
 | [GitHub — Risks and mitigations for Copilot cloud agent](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/risks-and-mitigations) | 2026 | 2 | il prodotto si chiama *cloud agent* da apr. 2026, non più *coding agent* |
 | [OpenAI — Codex: Agent approvals & security](https://developers.openai.com/codex/agent-approvals-security) | 2026 | 2 | sandbox offline di default con allowlist |
 | [Anthropic — claude-code-action, security.md](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md) | 2026 | 2 | |
