@@ -286,6 +286,40 @@ siano ancora quelle.
 5. **Niente infrastruttura prima del primo oggetto.** Costruire strumenti per studiare è la forma
    più elegante di rinvio.
 
+## Come si inizia
+
+1. **Fai un fork** (o un clone) di questo repository e crea una cartella `notes/`. Ogni passo
+   produce un file lì dentro: è l'unica cosa che alla fine conta.
+2. **Apri il passo 1 e, prima di leggere, rispondi per iscritto alla sua domanda** in una riga:
+   *a cosa serve, secondo te, un secondo agente?* Poi leggi le due fonti. Poi scrivi l'oggetto
+   del passo — la checklist — e confronta con quello che avevi risposto. Questo ordine vale per
+   ogni passo: prova, leggi, scrivi.
+3. **Un passo per sessione**, un'ora. Chiudi il passo solo quando lo racconti in tre frasi a
+   qualcuno senza rileggere gli appunti. Se non riesci, la sessione dopo si ricomincia dallo stesso
+   passo: nessuno si salta perché «sembra ovvio».
+4. **Se ti affianca un agente**, usalo come si usa un buon collega: fagli domande, non chiedergli
+   riassunti; non lasciargli scrivere le note al posto tuo; prima di leggere una fonte, fagli
+   verificare che esista ancora con quel titolo e quella data. In questo campo le pagine cambiano
+   nome ogni pochi mesi.
+5. **Per il lab del passo 6** ti serve un repository di prova separato, su cui puoi attivare i
+   `rulesets` (se il piano non li supporta sul privato, usa un repo pubblico di prova) e una
+   GitHub App dedicata all'agente. Preparali durante il passo 5, non prima.
+6. **Tieni il log** in fondo al tuo `notes/README.md`:
+
+   | passo | iniziato | chiuso | oggetto prodotto |
+   |---|---|---|---|
+   | 1 | | | |
+   | 2 | | | |
+   | 3 | | | |
+   | 4 | | | |
+   | 5 | | | |
+   | 6 | | | |
+   | 7 | | | |
+   | 8 | | | |
+
+Questo repository è una fotografia di settembre 2026 e non viene aggiornato: se una fonte è
+cambiata, annotalo nel tuo fork.
+
 ## Cosa serve
 
 Un terminale con `git` e `gh`, una CLI di coding agent (`claude`, `codex` o equivalente), un
