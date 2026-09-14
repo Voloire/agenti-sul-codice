@@ -42,10 +42,10 @@ controllo della lezione 2 ha un posto preciso nella configurazione, e che tu sai
 
 ### Il piano GitHub decide dove fai il lab
 
-I ruleset — le regole moderne sui branch — sono disponibili, dice GitHub, «in public repositories
-with GitHub Free and GitHub Free for organizations, and in public and private repositories with
-GitHub Pro, GitHub Team, and GitHub Enterprise Cloud». Quindi: **su un repository privato con
-account Free i ruleset non ci sono**. Il repository di prova o è pubblico, o sta su un account Pro
+I ruleset — le regole moderne sui branch — sono disponibili, dice la pagina *About rulesets*
+nel riquadro «Who can use this feature?», «in public repositories with GitHub Free and GitHub Free
+for organizations, and in public and private repositories with GitHub Pro, GitHub Team, and GitHub
+Enterprise Cloud». Quindi: **su un repository privato con account Free i ruleset non ci sono**. Il repository di prova o è pubblico, o sta su un account Pro
 o Team. Deciderlo prima evita di scoprirlo alla terza sessione.
 
 Crea il repository di prova con qualcosa dentro che abbia un test: un piccolo progetto in
@@ -53,12 +53,13 @@ qualunque linguaggio, con un comando di test che passa. Il branch di integrazion
 
 ### Ruleset e non branch protection
 
-GitHub oggi raccomanda i ruleset rispetto alle branch protection rules classiche: «Multiple
-rulesets can apply to the same branch at the same time, while only one branch protection rule
-applies», e quando si sovrappongono «the most restrictive version of the rule applies». Un
-ruleset si può mettere in `evaluate` per vederne l'effetto senza imporlo, e «Anyone with read
-access to a repository can view its active rulesets» — la regola è leggibile da chiunque, il che
-per un assessment vale oro.
+GitHub presenta i ruleset come «more flexible ways to manage and understand protections» rispetto
+alle branch protection rules classiche, con cui convivono: «Multiple rulesets can apply to the same
+branch at the same time, while only one branch protection rule applies», e quando si sovrappongono
+«the most restrictive version of the rule applies». L'API accetta `enforcement: evaluate` per
+vederne l'effetto senza imporlo (l'interfaccia lo propone per provare le restrizioni sui
+metadati), e «Anyone with read access to a repository can view its active rulesets» — la regola è
+leggibile da chiunque, il che per un assessment vale oro.
 
 Le regole che servono, con i nomi della documentazione: **Require a pull request before merging**
 (con *Required approvals*, *Dismiss stale pull request approvals when new commits are pushed*),
@@ -68,10 +69,11 @@ Le regole che servono, con i nomi della documentazione: **Require a pull request
 
 Un ruleset ha una **bypass list**: «you can allow certain users to bypass the rules in the
 ruleset» — ruoli, team, GitHub App. Nel lab resta **vuota**. Con la lista vuota, nemmeno
-l'amministratore del repository salta le regole: la documentazione lo dice per via indiretta —
-«organization owners or repository administrators will be unable to change or rename the default
-branch unless they are authorized to bypass the ruleset». Una bypass list vuota è il controllo che
-rende vere tutte le altre regole; una con dentro «Repository admin» è una porta.
+l'amministratore del repository salta le regole: la documentazione lo dice per via indiretta, nella
+nota alla regola *Block force pushes* — «If force pushes are blocked, organization owners or
+repository administrators will be unable to change or rename the default branch unless they are
+authorized to bypass the ruleset». Una bypass list vuota è il controllo che rende vere tutte le
+altre regole; una con dentro «Repository admin» è una porta.
 
 ### Da terminale
 
@@ -111,8 +113,10 @@ gh ruleset check main
 ```
 
 `~DEFAULT_BRANCH` è il pattern speciale per il branch di default. `"context": "test"` è il **nome
-del job** della CI che renderai obbligatorio nella sessione 2: deve coincidere. `bypass_actors` è
-`[]`, e resta così.
+del job** della CI che renderai obbligatorio nella sessione 2: deve coincidere. Se vuoi che il check
+valga solo quando lo emette GitHub Actions e non un'altra app con lo stesso nome, la documentazione
+(*Troubleshooting required status checks*, «Required status checks from unexpected sources») prevede
+`integration_id` accanto a `context`. `bypass_actors` è `[]`, e resta così.
 
 ---
 
@@ -148,7 +152,8 @@ token, in tre passi che la documentazione descrive con esempi in Bash:
    `exp` al massimo dieci minuti nel futuro, `iss` uguale al client ID;
 2. l'**installation ID**, da `GET /repos/{owner}/{repo}/installation` con quel JWT;
 3. il **token**: `POST /app/installations/{id}/access_tokens`, opzionalmente con `repositories` e
-   `permissions` per restringerlo ancora. «You must use a JWT to access this endpoint.»
+   `permissions` per restringerlo ancora. La REST reference avverte: «You must use a JWT to access
+   this endpoint.»
 
 Il token si usa con git come password HTTP — `git clone https://x-access-token:TOKEN@github.com/OWNER/REPO.git`
 — e con `gh` attraverso la variabile `GH_TOKEN`, che «takes precedence over previously stored
@@ -172,9 +177,9 @@ dell'agente riesci a fare `gh api user` e vedi il tuo nome, l'identità non è s
 Un workflow GitHub Actions che gira su `pull_request` ed esegue il test del progetto. Due dettagli
 che la documentazione sottolinea e che fanno fallire i lab:
 
-- Il required status check è **il nome del job**: «Use `jobs.<job_id>.name` to set a name for the
-  job», e «make sure that job names are unique across all workflows». Il nome deve essere `test`,
-  come nel ruleset.
+- Il required status check è **il nome del job**, quello che imposti con `jobs.<job_id>.name`
+  nella sintassi dei workflow. Il nome deve essere `test`, come nel ruleset; e dev'essere uno solo:
+  se «a check and a commit status have the same name, both must pass when that name is required».
 - «GitHub Actions generates checks, not commit statuses.» Se il workflow non gira — per un filtro
   su path o branch — «Associated checks stay in a "Pending" state and block merging». E il caso
   opposto, insidioso: «A job that is skipped will report its status as "Success". It will not
@@ -216,9 +221,11 @@ apre la PR. Osserva, e annota nella nota di lab:
 - **cosa l'agente ha toccato** oltre al necessario, se qualcosa.
 
 Un fatto della documentazione da tenere presente: «Pull request authors cannot approve their own
-pull requests.» Con un solo account umano che apre la PR e *required approvals: 1*, quella PR
-resterebbe non mergiabile per sempre. Con l'App come autore, tu non sei l'autore, e puoi
-approvare. È la stessa separazione che Copilot cloud agent impone da solo (lezione 2): qui la
+pull requests.» La stessa pagina aggiunge che «Repository owners and administrators can merge a
+pull request even if it hasn't received an approving review» — vale per le branch protection
+classiche; con un ruleset e la bypass list vuota, anche l'amministratore resta fermo. Con un solo
+account umano che apre la PR e *required approvals: 1*, quella PR resterebbe dunque non mergiabile.
+Con l'App come autore, tu non sei l'autore, e puoi approvare. È la stessa separazione che Copilot cloud agent impone da solo (lezione 2): qui la
 ottieni dal ruleset più l'identità.
 
 ---
@@ -294,12 +301,12 @@ Ora sai nominare le regole. Ci sono? Tre righe.
 
 Tutte documentazione GitHub. Leggile prima di ciascuna sessione, non tutte insieme.
 
-1. [*About rulesets*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) e [*Available rules for rulesets*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets); [*Creating rulesets for a repository*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository) per la bypass list.
-2. [*GitHub's plans*](https://docs.github.com/en/get-started/learning-about-github/githubs-plans) — dove i ruleset sono disponibili.
+1. [*About rulesets*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) — anche per i piani in cui sono disponibili — e [*Available rules for rulesets*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets); [*Creating rulesets for a repository*](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository) per la bypass list.
+2. [*GitHub's plans*](https://docs.github.com/en/get-started/learning-about-github/githubs-plans) — i piani in generale; i ruleset non vi compaiono per nome.
 3. REST, [*Create a repository ruleset*](https://docs.github.com/en/rest/repos/rules?apiVersion=2022-11-28#create-a-repository-ruleset); CLI, [`gh ruleset`](https://cli.github.com/manual/gh_ruleset).
 4. [*Registering a GitHub App*](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app), [*Choosing permissions*](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/choosing-permissions-for-a-github-app), [*Installing your own GitHub App*](https://docs.github.com/en/apps/using-github-apps/installing-your-own-github-app).
-5. [*Generating a JWT for a GitHub App*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app), [*Generating an installation access token*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app), [*Authenticating as a GitHub App installation*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation).
-6. [*About status checks*](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks) e [*Troubleshooting required status checks*](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks).
+5. [*Generating a JWT for a GitHub App*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app), [*Generating an installation access token*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app), [*Authenticating as a GitHub App installation*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation); REST, [*Create an installation access token for an app*](https://docs.github.com/en/rest/apps/apps#create-an-installation-access-token-for-an-app); in Actions, [*Making authenticated API requests with a GitHub App in a GitHub Actions workflow*](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/making-authenticated-api-requests-with-a-github-app-in-a-github-actions-workflow) per `actions/create-github-app-token`.
+6. [*About status checks*](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks), [*Troubleshooting required status checks*](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks), e [*Workflow syntax for GitHub Actions*](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) per `jobs.<job_id>.name`.
 7. [*Approving a pull request with required reviews*](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews) — «Pull request authors cannot approve their own pull requests».
 
 ---
@@ -315,14 +322,16 @@ Tutte documentazione GitHub. Leggile prima di ciascuna sessione, non tutte insie
 <summary>Risposte</summary>
 
 1. Perché chi è nella bypass list salta **tutte** le regole del ruleset, e con la lista vuota
-   nemmeno l'amministratore lo può fare: la documentazione dice che «repository administrators
-   will be unable to change or rename the default branch unless they are authorized to bypass the
-   ruleset». Una bypass list con «Repository admin» dentro rende le altre regole decorative.
+   nemmeno l'amministratore lo può fare: la documentazione, nella nota a *Block force pushes*, dice
+   che «If force pushes are blocked, organization owners or repository administrators will be unable
+   to change or rename the default branch unless they are authorized to bypass the ruleset». Una bypass list con «Repository admin» dentro rende le altre regole decorative.
 2. Perché «A job that is skipped will report its status as "Success". It will not prevent a pull
    request from merging, even if it is a required check». Il check risulta verde senza aver
    eseguito niente. Il job deve girare sempre sulle PR, senza condizioni che lo saltino.
 3. Resta **non mergiabile**: «Pull request authors cannot approve their own pull requests», e con
-   la bypass list vuota nessuno può forzare. Con la GitHub App come autore della PR, l'umano non è
+   la bypass list vuota nessuno può forzare — la clausola per cui «Repository owners and
+   administrators can merge a pull request even if it hasn't received an approving review» vale
+   per le branch protection classiche, non per un ruleset senza bypass. Con la GitHub App come autore della PR, l'umano non è
    l'autore e può approvare: la separazione fra chi scrive e chi ammette è nella struttura, non
    nella buona volontà.
 

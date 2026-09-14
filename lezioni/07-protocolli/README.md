@@ -60,26 +60,29 @@ Control le ha lette.
 **Autorizzazione.** Opzionale, ma se c'è è OAuth 2.1: «Authorization servers MUST implement OAuth
 2.1»; il server MCP è un OAuth resource server, il client un OAuth client. E qui tornano le due
 frasi della lezione 5: il `resource` di RFC 8707 obbligatorio in ogni richiesta, e i server che
-«MUST validate that access tokens were issued specifically for them as the intended audience» —
-«MUST NOT accept or transit any other tokens». Il **token passthrough** è vietato per nome.
+«MUST validate that access tokens were issued specifically for them as the intended audience». La
+pagina *Security Best Practices* completa: «MUST NOT accept or transit any other tokens» — il
+**token passthrough** è vietato per nome.
 
 ### 3. A2A — Agent2Agent
 
-**Cos'è.** «An open standard for seamless communication and collaboration between AI agents»:
-agenti che possono «delegate sub-tasks, exchange information, and coordinate actions» senza
-condividere i propri internals. Nato in Google, donato alla Linux Foundation; versione **1.0.0**
-del 12 marzo 2026, «the first stable, production-ready version»; dall'agosto 2026 progetto della
-stessa Agentic AI Foundation di MCP. Il comunicato LF dell'aprile 2026 conta «over 150 supporting
-organizations», con Google Cloud, Microsoft Azure e AWS Bedrock fra le piattaforme.
+**Cos'è.** Dalla home del progetto: «An open standard for seamless communication and
+collaboration between AI agents»: agenti che possono «delegate sub-tasks, exchange information, and
+coordinate actions» senza condividere i propri internals. Nato in Google, donato alla Linux
+Foundation; versione **1.0.0** del 12 marzo 2026, «the first stable, production-ready version»; dal
+27 agosto 2026 progetto *Growth Stage* della stessa Agentic AI Foundation di MCP. Il comunicato LF
+del 9 aprile 2026 conta «more than 150 organizations supporting the standard», con Google Cloud,
+Microsoft Azure e Amazon Bedrock AgentCore Runtime fra le piattaforme.
 
 **Agent Card.** «A JSON metadata document describing an agent's identity, capabilities, endpoint,
-skills, and authentication requirements», pubblicato per convenzione in
-`/.well-known/agent-card.json`. È il modo in cui un agente si presenta a un altro.
+skills, and authentication requirements», pubblicato per convenzione — dice la pagina *Agent
+Discovery* — in `/.well-known/agent-card.json`. È il modo in cui un agente si presenta a un altro.
 
 **Task.** «A stateful unit of work initiated by an agent, with a unique ID and defined lifecycle.»
-Gli stati, con i nomi della spec 1.0: `SUBMITTED`, `WORKING`, `INPUT_REQUIRED`, `AUTH_REQUIRED`,
-`COMPLETED`, `FAILED`, `CANCELED`, `REJECTED` (più `UNSPECIFIED`). Gli ultimi quattro sono
-terminali: «Once a task reaches a terminal state... it cannot restart»; un seguito è un nuovo task
+Gli stati, con i nomi della spec 1.0 (enumerazione `TaskState`, prefisso `TASK_STATE_` abbreviato):
+`SUBMITTED`, `WORKING`, `INPUT_REQUIRED`, `AUTH_REQUIRED`, `COMPLETED`, `FAILED`, `CANCELED`,
+`REJECTED`, più `UNSPECIFIED`; la pagina *Life of a Task* li scrive in minuscolo con il trattino
+(`input-required`, `auth-required`). Gli ultimi quattro sono terminali: «Once a task reaches a terminal state... it cannot restart»; un seguito è un nuovo task
 nello stesso `contextId`. `INPUT_REQUIRED` e `AUTH_REQUIRED` sono stati di interruzione: il task
 aspetta qualcuno.
 
@@ -96,9 +99,10 @@ Vale la pena dirlo esplicitamente, perché è dove le aspettative sbagliano. Sta
 - **L'audit trail.** MCP lo nomina solo come *rischio* del token passthrough («Accountability and
   Audit Trail Issues»); non definisce nessun formato né obbligo di log. A2A non lo tratta. Chi ha
   fatto cosa resta a carico dell'host o dell'orchestratore.
-- **La separazione fra chi scrive e chi approva.** MCP dice che «Hosts must obtain explicit user
-  consent before invoking any tool» e che «MCP itself cannot enforce these security principles at
-  the protocol level»: il consenso è un requisito sull'host, non un ruolo nel protocollo. A2A ha
+- **La separazione fra chi scrive e chi approva.** La pagina radice della spec MCP dice che «Hosts
+  must obtain explicit user consent before invoking any tool» e che «MCP itself cannot enforce these
+  security principles at the protocol level»: il consenso è un requisito sull'host, non un ruolo nel
+  protocollo. A2A ha
   stati di interruzione, non un approvatore terzo.
 - **Il codice sorgente.** Nessuna delle due specifiche parla di repository, branch, diff, pull
   request o commit. Nel caso dei coding agent il lavoro — il diff — è fuori da entrambi i
@@ -116,7 +120,7 @@ ruleset, la GitHub App, la pull request.
 | | MCP | A2A |
 |---|---|---|
 | Copilot cloud agent | sì: «You can use MCP to extend the capabilities of Copilot cloud agent»; solo tools, non resources o prompts; niente server remoti con OAuth | non dichiarato |
-| Codex (CLI, IDE, cloud) | sì: stdio e Streamable HTTP; OAuth con Client ID Metadata Documents e Dynamic Client Registration | non dichiarato |
+| Codex | sì: stdio e Streamable HTTP; OAuth con Client ID Metadata Documents e Dynamic Client Registration | non dichiarato |
 | Claude Code | sì: HTTP, stdio, WebSocket; OAuth 2.0; può fare anche da server (`claude mcp serve`) | non dichiarato |
 
 Tutti e tre parlano MCP; **nessuno dei tre dichiara A2A**. Non è un giudizio su A2A — è reale, ha
@@ -147,9 +151,9 @@ domande:
 
 Overview e concetti, non le specifiche intere.
 
-**MCP** — [Versioning](https://modelcontextprotocol.io/specification/versioning) (qual è la corrente), [Architecture](https://modelcontextprotocol.io/specification/latest/architecture), [Transports](https://modelcontextprotocol.io/specification/latest/basic/transports), [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization), [Security Best Practices](https://modelcontextprotocol.io/specification/latest/basic/security_best_practices); il [post sulla donazione alla AAIF](https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/).
+**MCP** — la [pagina radice della specifica](https://modelcontextprotocol.io/specification/latest) (definizione, consenso, «cannot enforce»), [Versioning](https://modelcontextprotocol.io/specification/versioning) (qual è la corrente), [Architecture](https://modelcontextprotocol.io/specification/latest/architecture), [Transports](https://modelcontextprotocol.io/specification/latest/basic/transports), [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization), [Security Best Practices](https://modelcontextprotocol.io/specification/latest/basic/security_best_practices) («MUST NOT accept or transit», audit trail); il [post sulla donazione alla AAIF](https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/).
 
-**A2A** — [Key concepts](https://a2a-protocol.org/latest/topics/key-concepts/), [Life of a Task](https://a2a-protocol.org/latest/topics/life-of-a-task/), [A2A and MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/); il [post della 1.0](https://a2a-protocol.org/latest/blog/2026/03/12/a2a-protocol-ships-v10-production-ready-standard-for-agent-to-agent-communication/) e il [comunicato LF](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year).
+**A2A** — la [home del progetto](https://a2a-protocol.org/latest/) (definizione), [Key concepts](https://a2a-protocol.org/latest/topics/key-concepts/), [Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/) (il path well-known), [Life of a Task](https://a2a-protocol.org/latest/topics/life-of-a-task/), [A2A and MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/); il [post della 1.0](https://a2a-protocol.org/latest/blog/2026/03/12/a2a-protocol-ships-v10-production-ready-standard-for-agent-to-agent-communication/), il [comunicato LF](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year) del 9 aprile 2026 e il post [*A New Chapter for A2A*](https://a2a-protocol.org/latest/blog/2026/08/27/a-new-chapter-for-a2a-joining-the-agentic-ai-foundation/) del 27 agosto 2026 (l'ingresso nella AAIF).
 
 **Nei coding agent** — GitHub, [MCP and Copilot cloud agent](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/mcp-and-cloud-agent); OpenAI, [Codex MCP](https://developers.openai.com/codex/mcp); Anthropic, [Claude Code MCP](https://code.claude.com/docs/en/mcp).
 

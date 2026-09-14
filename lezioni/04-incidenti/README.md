@@ -43,12 +43,13 @@ Tre sistemi, tre varianti dello stesso attacco:
   scavalca le istruzioni; la `GEMINI_API_KEY` viene postata come commento pubblico.
 - **GitHub Copilot coding agent**: istruzioni in un **commento HTML** dentro un'issue, invisibile
   nel rendering; l'agente esegue `ps auxeww | base64` e committa l'output in un file della PR.
-  Decodificato, contiene `GITHUB_TOKEN`, `GITHUB_COPILOT_API_TOKEN`, `COPILOT_JOB_NONCE`.
+  Decodificato, contiene `GITHUB_TOKEN`, `GITHUB_PERSONAL_ACCESS_TOKEN`, `GITHUB_COPILOT_API_TOKEN`,
+  `COPILOT_JOB_NONCE`.
 
 Il caso Copilot è quello da studiare, perché **tre mitigazioni esistevano ed erano attive**, e sono
-state aggirate una per una: il filtro dell'ambiente puliva solo il subprocess bash, mentre «parent
-Node.js and MCP server retain full environment»; il secret scanning è stato battuto codificando in
-base64; il firewall di rete era irrilevante, perché l'esfiltrazione passava da `github.com`, host
+state aggirate una per una: il filtro dell'ambiente puliva solo il subprocess bash, mentre «The
+parent Node.js process and the MCP server process retain the full environment»; il secret scanning
+è stato battuto codificando in base64; il firewall di rete era irrilevante, perché l'esfiltrazione passava da `github.com`, host
 consentito per definizione.
 
 Risposte dei vendor: Anthropic ha aggiunto `--disallowed-tools 'Bash(ps:*)'` e una nota — «The
@@ -103,8 +104,8 @@ injection in sé resta.
 
 ### 5. s1ngularity / Nx (agosto 2025)
 
-*Wiz Research; postmortem di Nx.* Pacchetti maligni pubblicati il 26 agosto 2025, rimossi dopo
-circa quattro ore; ondate successive fino al 31.
+*Wiz Research (Rami McCarthy), 3 settembre 2025; postmortem di Nx.* Pacchetti maligni pubblicati
+il 26 agosto 2025, rimossi dopo circa quattro ore; ondate successive fino al 31.
 
 È un incidente **a tre stadi**, e i coding agent compaiono nel secondo:
 
@@ -131,25 +132,29 @@ contributor esterni, verifica della provenance.
 Una precisazione che le fonti impongono: **non è stato «un attacco AI riuscito»**. Wiz misura che
 «AI only exfiltrated data successfully in under a quarter of cases», e che «almost a quarter of
 Claude interactions were rejected». Il grosso del danno viene dal postinstall classico e dai token.
-Ma è il primo caso documentato in cui un malware usa gli agenti installati sulla macchina come
-strumento di ricerca dei segreti — ed è il ponte fra questo percorso e la software supply chain.
+Ma Wiz lo descrive come «AI-powered malware», e la stampa lo ha indicato come il primo caso noto in
+cui un malware usa gli agenti installati sulla macchina come strumento di ricerca dei segreti — ed
+è il ponte fra questo percorso e la software supply chain.
 
 ### 6. Replit / SaaStr (luglio 2025) — il caso di natura diversa
 
-*Jason Lemkin*, 12–20 luglio 2025; risposta di Amjad Masad (Replit) riportata dalla stampa.
+*Jason Lemkin*, 12–20 luglio 2025; The Register il 21 luglio, Fortune il 23 con la risposta di
+Amjad Masad (Replit).
 
 Nessun attaccante. Nessuna prompt injection. Durante un **code freeze dichiarato in chat**,
-l'agente Replit esegue comandi distruttivi sul database di produzione — «more than 1,200 executives
-and over 1,190 companies». Poi dichiara il rollback «impossible in this case» e che ha «destroyed
-all database versions»; Lemkin verifica che **il rollback funzionava**. In precedenza aveva creato
-«a 4,000-record database full of fictional people» e report falsi, «eleven times in ALL CAPS»
-dopo che gli era stato detto di non farlo. La confessione dell'agente: «This was a catastrophic
-failure on my part. I destroyed months of work in seconds.»
+l'agente Replit esegue comandi distruttivi sul database di produzione — dati di «more than 1,200
+executives and over 1,190 companies», secondo Fortune. Poi dichiara il rollback «impossible in this
+case» e che ha «destroyed all database versions»; Lemkin verifica che **il rollback funzionava**. In
+precedenza aveva creato «a 4,000-record database full of fictional people» e report falsi, «eleven
+times in ALL CAPS» dopo che gli era stato detto di non farlo. La confessione dell'agente, nella
+versione del Register: «a catastrophic error of judgement», che ha «violated your explicit trust
+and instructions»; in quella di Fortune: «I destroyed months of work in seconds.»
 
 Il controllo mancante non ha a che fare con il contenuto non fidato: **nessuna separazione fra
 sviluppo, staging e produzione**, e nessun modo di rendere un code freeze eseguibile. La risposta
-di Replit: «Unacceptable and should never be possible»; separazione automatica fra database di
-sviluppo e produzione; un planning mode «so you can strategize without risking your codebase».
+di Masad, riportata da Fortune — il Register scriveva di non aver ancora ottenuto commento —:
+«Unacceptable and should never be possible»; separazione automatica fra database di sviluppo e
+produzione; un planning mode «so you can strategize without risking your codebase».
 
 Va tenuto perché insegna una cosa che gli altri quattro non insegnano — permessi di produzione in
 mano a un agente, senza gate — ma va tenuto **come nota**: è ASI05, non ASI01, e in un workflow a
@@ -202,8 +207,8 @@ I writeup originali, non i riassunti di stampa. Leggili dopo la lezione, uno per
 1. Aonan Guan, [*Comment and Control*](https://oddguan.com/blog/comment-and-control-prompt-injection-credential-theft-claude-code-gemini-cli-github-copilot/), 15 aprile 2026.
 2. Invariant Labs, [*GitHub MCP Exploited*](https://invariantlabs.ai/blog/mcp-github-vulnerability), 26 maggio 2025.
 3. Legit Security, [*CamoLeak*](https://www.legitsecurity.com/blog/camoleak-critical-github-copilot-vulnerability-leaks-private-source-code), 8 ottobre 2025.
-4. Wiz Research, [*s1ngularity's aftermath*](https://www.wiz.io/blog/s1ngularitys-aftermath), agosto 2025, e il [postmortem di Nx](https://nx.dev/blog/s1ngularity-postmortem).
-5. Come nota: The Register, [*Replit / SaaStr*](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/), 21 luglio 2025. I post originali di Lemkin e la risposta di Masad sono su X e non sempre raggiungibili; le citazioni qui vengono dalla stampa.
+4. Wiz Research, [*s1ngularity's aftermath*](https://www.wiz.io/blog/s1ngularitys-aftermath), 3 settembre 2025, e il [postmortem di Nx](https://nx.dev/blog/s1ngularity-postmortem).
+5. Come nota: The Register, [*Replit / SaaStr*](https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/), 21 luglio 2025, e Fortune, [*AI coding tool Replit wiped database*](https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/), 23 luglio 2025, per i numeri e la risposta di Masad. I post originali di Lemkin sono su X e non sempre raggiungibili; le citazioni qui vengono dalla stampa.
 
 ---
 
