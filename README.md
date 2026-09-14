@@ -18,7 +18,7 @@ l'esercizio con template e soluzione di riferimento, l'autoverifica con le rispo
 | # | lezione | sessioni | stato |
 |---|---|---|---|
 | 1 | [Le posizioni correnti sul multi-agent](lezioni/01-posizioni-correnti/README.md) | 2 | disponibile |
-| 2 | I controlli dei tre vendor, letti in parallelo | 1 | in scrittura |
+| 2 | [I controlli dei tre vendor, letti in parallelo](lezioni/02-controlli-vendor/README.md) | 1 | disponibile |
 | 3 | La griglia: OWASP Top 10 for Agentic Applications 2026 | 1 | in scrittura |
 | 4 | Gli incidenti veri, ricostruiti | 2 | in scrittura |
 | 5 | Identità e credenziali degli agenti | 3 | in scrittura |
