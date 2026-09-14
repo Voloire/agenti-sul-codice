@@ -23,7 +23,7 @@ l'esercizio con template e soluzione di riferimento, l'autoverifica con le rispo
 | 4 | [Gli incidenti veri, ricostruiti](lezioni/04-incidenti/README.md) | 2 | disponibile |
 | 5 | [Identità e credenziali degli agenti](lezioni/05-identita-credenziali/README.md) | 3 | disponibile |
 | 6 | [Il lab: il workflow di riferimento, una volta](lezioni/06-lab/README.md) | 3–4 | disponibile |
-| 7 | I protocolli, collocati | 1 | in scrittura |
+| 7 | [I protocolli, collocati](lezioni/07-protocolli/README.md) | 1 | disponibile |
 | 8 | L'assessment, misurabile | 1–2 | in scrittura |
 
 Per seguirlo: fai un fork, e usa `progressi/` — un file per passo, già predisposto per il primo.
